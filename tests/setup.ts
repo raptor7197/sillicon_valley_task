@@ -1,13 +1,10 @@
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
 
-dotenv.config();
+const setup = async () => {
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-export const initDb = async () => {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS posts (
       id SERIAL PRIMARY KEY,
@@ -15,6 +12,8 @@ export const initDb = async () => {
       content TEXT NOT NULL
     );
   `);
+
+  await pool.end();
 };
 
-export default pool;
+setup();

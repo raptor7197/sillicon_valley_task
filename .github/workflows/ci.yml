@@ -30,7 +30,9 @@ jobs:
         run: npm install
 
       - name: Run Tests
-        run: npm test
+        run: |
+          node tests/setup.ts
+          npm test
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/app_test
 

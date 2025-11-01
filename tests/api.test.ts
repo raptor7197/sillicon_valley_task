@@ -1,6 +1,6 @@
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import request from 'supertest';
-import app from '../src/app';
+import app from '../server/src/app';
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import { Pool } from 'pg';
 
@@ -9,7 +9,7 @@ describe('API Integration Tests', () => {
   let pool: Pool;
 
   beforeAll(async () => {
-    container = await new PostgreSqlContainer().start();
+    container = await new PostgreSqlContainer('postgres:13').start();
     pool = new Pool({ connectionString: container.getConnectionUri() });
     process.env.DATABASE_URL = container.getConnectionUri();
 
@@ -20,12 +20,12 @@ describe('API Integration Tests', () => {
         content TEXT NOT NULL
       );
     `);
-  });
+  }, 120000);
 
   afterAll(async () => {
     await pool.end();
     await container.stop();
-  });
+  }, 120000);
 
   it('should get zero posts initially', async () => {
     const response = await request(app).get('/api/posts');
